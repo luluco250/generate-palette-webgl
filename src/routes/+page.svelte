@@ -36,9 +36,32 @@
 	}
 
 	ul {
+		font-family: monospace;
 		list-style: none;
 		padding: 0;
 		margin: 0;
+	}
+
+	li {
+		padding-left: 0.5rem;
+		border-left: solid 1rem;
+	}
+
+	li.main-color {
+		font-weight: bold;
+	}
+
+	li > button {
+		font: inherit;
+		appearance: none;
+		background: none;
+		color: inherit;
+		border: none;
+		cursor: pointer;
+	}
+
+	li > button:hover {
+		text-decoration: underline;
 	}
 </style>
 
@@ -77,13 +100,16 @@
 			step="0.1"
 			bind:value={gamma}
 		/>
-		<div>Colors:</div>
+		<div>Colors (click to copy):</div>
 		<ul>
 			{#each computedColors as c}
 				<li
-					style="border-left: solid {c} 1rem; padding-left: 0.5rem"
+					class:main-color={mainColor === c}
+					style="border-color: {c}"
 				>
-					{c}
+					<button onclick={() => copyToClipboard(c)}>
+						{c}
+					</button>
 				</li>
 			{/each}
 		</ul>
@@ -117,7 +143,7 @@
 	let offset = $state(3);
 	let offsetLocation: WebGLUniformLocation;
 	let paletteWidthLocation: WebGLUniformLocation;
-	let gamma = $state(2.2);
+	let gamma = $state(1.0);
 	let gammaLocation: WebGLUniformLocation;
 	let inputTextureLocation: WebGLUniformLocation;
 
@@ -327,5 +353,13 @@
 	function rgbToHex(red: number, green: number, blue: number): string {
 		const dec = red << 16 | green << 8 | blue;
 		return dec.toString(16).padStart(6, "0");
+	}
+
+	async function copyToClipboard(text: string): Promise<void> {
+		try {
+			await navigator.clipboard.writeText(text);
+		} catch (error) {
+			console.error("Failed to copy to clipboard:", error);
+		}
 	}
 </script>
