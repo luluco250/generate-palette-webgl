@@ -69,6 +69,14 @@
 			step="1"
 			bind:value={offset}
 		/>
+		<div>Gamma: {gamma}</div>
+		<input
+			type="range"
+			min="0.1"
+			max="3.3"
+			step="0.1"
+			bind:value={gamma}
+		/>
 		<div>Colors:</div>
 		<ul>
 			{#each computedColors as c}
@@ -109,6 +117,8 @@
 	let offset = $state(3);
 	let offsetLocation: WebGLUniformLocation;
 	let paletteWidthLocation: WebGLUniformLocation;
+	let gamma = $state(2.2);
+	let gammaLocation: WebGLUniformLocation;
 	let inputTextureLocation: WebGLUniformLocation;
 
 	onMount(() => {
@@ -232,6 +242,11 @@
 			"Failed to get paletteWidth uniform location",
 		);
 
+		gammaLocation = throwIfNullish(
+			gl.getUniformLocation(generatePaletteProgram, "gamma"),
+			"Failed to get gamma uniform location",
+		);
+
 		inputTextureLocation = throwIfNullish(
 			gl.getUniformLocation(renderTextureProgram, "inputTexture"),
 			"Failed to get inputTexture uniform location",
@@ -247,6 +262,7 @@
 		gl.uniform1f(brightnessLocation, brightness);
 		gl.uniform1f(offsetLocation, offset);
 		gl.uniform1f(paletteWidthLocation, paletteWidth);
+		gl.uniform1f(gammaLocation, gamma);
 
 		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 	}
