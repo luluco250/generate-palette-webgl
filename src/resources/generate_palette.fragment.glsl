@@ -2,7 +2,7 @@
 
 precision mediump float;
 uniform vec3 mainColor;
-uniform float brightness;
+uniform float contrast;
 uniform float offset;
 uniform float paletteWidth;
 uniform float gamma;
@@ -12,7 +12,7 @@ out vec4 color;
 
 void main() {
 	vec3 mainColor = pow(mainColor / 255.0, vec3(1.0 / gamma));
-	vec3 lightColor = mix(mainColor, vec3(1.0), brightness);
+	vec3 lightColor = mix(mainColor, vec3(1.0), contrast);
 
 	float palettePosition = floor(uv.x * paletteWidth - offset) / paletteWidth;
 	color = vec4(mix(mainColor, lightColor, palettePosition), 1.0);

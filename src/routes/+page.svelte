@@ -76,13 +76,13 @@
 	<form>
 		<div>Main color: {mainColor}</div>
 		<input type="color" bind:value={mainColor}/>
-		<div>Brightness: {brightness}</div>
+		<div>Contrast: {contrast}</div>
 		<input
 			type="range"
 			min="0.0"
-			max="1.0"
+			max="2.0"
 			step="0.1"
-			bind:value={brightness}
+			bind:value={contrast}
 		/>
 		<div>Offset: {offset}</div>
 		<input
@@ -138,7 +138,7 @@
 	let mainColor = $state("#2c4888");
 	let mainColorRgb = $derived.by(() => hexToRgb(mainColor.slice(1)));
 	let mainColorLocation: WebGLUniformLocation;
-	let brightness = $state(0.8);
+	let contrast = $state(0.8);
 	let brightnessLocation: WebGLUniformLocation;
 	let offset = $state(3);
 	let offsetLocation: WebGLUniformLocation;
@@ -254,8 +254,8 @@
 		);
 
 		brightnessLocation = throwIfNullish(
-			gl.getUniformLocation(generatePaletteProgram, "brightness"),
-			"Failed to get brightness uniform location",
+			gl.getUniformLocation(generatePaletteProgram, "contrast"),
+			"Failed to get contrast uniform location",
 		);
 
 		offsetLocation = throwIfNullish(
@@ -285,7 +285,7 @@
 		gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
 
 		gl.uniform3f(mainColorLocation, ...mainColorRgb);
-		gl.uniform1f(brightnessLocation, brightness);
+		gl.uniform1f(brightnessLocation, contrast);
 		gl.uniform1f(offsetLocation, offset);
 		gl.uniform1f(paletteWidthLocation, paletteWidth);
 		gl.uniform1f(gammaLocation, gamma);
