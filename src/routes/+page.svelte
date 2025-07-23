@@ -1,4 +1,4 @@
-<style>
+<style lang="scss">
 	:global(body) {
 		margin: 0;
 		display: flex;
@@ -36,32 +36,17 @@
 	}
 
 	ul {
+		display: flex;
+		flex-flow: column nowrap;
+		align-items: stretch;
 		font-family: monospace;
 		list-style: none;
 		padding: 0;
 		margin: 0;
-	}
 
-	li {
-		padding-left: 0.5rem;
-		border-left: solid 1rem;
-	}
-
-	li.main-color {
-		font-weight: bold;
-	}
-
-	li > button {
-		font: inherit;
-		appearance: none;
-		background: none;
-		color: inherit;
-		border: none;
-		cursor: pointer;
-	}
-
-	li > button:hover {
-		text-decoration: underline;
+		& > li {
+			display: contents;
+		}
 	}
 </style>
 
@@ -74,8 +59,18 @@
 		></canvas>
 	</div>
 	<form>
-		<div>Main color: {mainColor}</div>
-		<input type="color" bind:value={mainColor}/>
+		<div>Main color:</div>
+		<ColorLabel
+			style="font-weight: bold"
+			color={mainColor}
+			onClick={() => colorInput.click()}
+		/>
+		<input
+			hidden
+			type="color"
+			bind:this={colorInput}
+			bind:value={mainColor}
+		/>
 		<div>Contrast: {contrast}</div>
 		<input
 			type="range"
@@ -103,13 +98,12 @@
 		<div>Colors (click to copy):</div>
 		<ul>
 			{#each computedColors as c}
-				<li
-					class:main-color={mainColor === c}
-					style="border-color: {c}"
-				>
-					<button onclick={() => copyToClipboard(c)}>
-						{c}
-					</button>
+				<li>
+					<ColorLabel
+						color={c}
+						style={c === mainColor ? "font-weight: bold" : ""}
+						onClick={() => copyToClipboard(c)}
+					/>
 				</li>
 			{/each}
 		</ul>
@@ -117,14 +111,18 @@
 </main>
 
 <script lang="ts">
+	import ColorLabel from "$lib/components/color-label.svelte";
 	import { onMount } from "svelte";
 	import fullscreenQuadVertexShaderSource from "../resources/fullscreen_quad.vertex.glsl?raw";
 	import generatePaletteFragmentShaderSource from "../resources/generate_palette.fragment.glsl?raw";
 	import renderTextureFragmentShaderSource from "../resources/render_texture.fragment.glsl?raw";
-	import { throwIfNullish } from "$lib/null";
+	import { throwIfNullish } from "$lib/utils/null";
+	import { hexToRgb, rgbToHex } from "$lib/utils/color";
+  import { copyToClipboard } from "$lib/utils/clipboard";
 
 	const paletteWidth = 10;
 	const paletteHeight = 1;
+	let colorInput: HTMLInputElement;
 	let computedColors: string[] = $state([]);
 	let canvasContainer: HTMLDivElement;
 	let canvasWidth = $state(1);
@@ -343,23 +341,5 @@
 		const log = gl.getShaderInfoLog(shader);
 		gl.deleteShader(shader);
 		throw new Error(`Failed to compile shader "${name}", info log:\n${log}`);
-	}
-
-	function hexToRgb(hex: string): [number, number, number] {
-		const dec = parseInt(hex, 16);
-		return [dec >> 16 & 0xFF, dec >> 8 & 0xFF, dec & 0xFF];
-	}
-
-	function rgbToHex(red: number, green: number, blue: number): string {
-		const dec = red << 16 | green << 8 | blue;
-		return dec.toString(16).padStart(6, "0");
-	}
-
-	async function copyToClipboard(text: string): Promise<void> {
-		try {
-			await navigator.clipboard.writeText(text);
-		} catch (error) {
-			console.error("Failed to copy to clipboard:", error);
-		}
 	}
 </script>

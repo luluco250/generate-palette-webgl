@@ -21,6 +21,7 @@
 		"eslint": "^9.18.0",
 		"eslint-plugin-svelte": "^3.0.0",
 		"globals": "^16.0.0",
+		"sass-embedded": "^1.89.2",
 		"svelte": "^5.0.0",
 		"svelte-check": "^4.0.0",
 		"typescript": "^5.0.0",

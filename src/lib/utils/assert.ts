@@ -1,6 +1,6 @@
 import { isNullish } from "./null";
 
-class AssertionError extends Error {
+export class AssertionError extends Error {
 	public constructor(message: string) {
 		super(`Assertion failed: ${message}`);
 	}
